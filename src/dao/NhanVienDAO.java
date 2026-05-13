@@ -11,19 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NhanVienDAO {
-    
+
     // 1. Kiểm tra đăng nhập 
     public NhanVien checkLogin(String username, String password) {
         String sql = "SELECT * FROM NhanVien WHERE Username = ? AND Password = ?";
-        
+
         try (Connection con = DatabaseConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            
+
             // Truyền tham số vào câu SQL để tránh SQL Injection
             ps.setString(1, username);
             ps.setString(2, password);
             ResultSet rs = ps.executeQuery();
-            
+
             // Nếu có kết quả trả về -> Đăng nhập đúng
             if (rs.next()) {
                 NhanVien nv = new NhanVien();
@@ -45,11 +45,11 @@ public class NhanVienDAO {
     public List<NhanVien> getAll() {
         List<NhanVien> list = new ArrayList<>();
         String sql = "SELECT * FROM NhanVien";
-        
+
         try (Connection con = DatabaseConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            
+
             while (rs.next()) {
                 NhanVien nv = new NhanVien();
                 nv.setId(rs.getInt("ID"));
@@ -71,7 +71,7 @@ public class NhanVienDAO {
         String sql = "SELECT * FROM NhanVien WHERE ID = ?";
         try (Connection con = DatabaseConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            
+
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -96,13 +96,13 @@ public class NhanVienDAO {
         String sql = "INSERT INTO NhanVien (Username, Password, HoTen, DienThoai, Quyen) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = DatabaseConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            
+
             ps.setString(1, nv.getUsername());
             ps.setString(2, nv.getPassword());
             ps.setString(3, nv.getHoTen());
             ps.setString(4, nv.getDienThoai());
             ps.setInt(5, nv.getQuyen());
-            
+
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -115,14 +115,14 @@ public class NhanVienDAO {
         String sql = "UPDATE NhanVien SET Username = ?, Password = ?, HoTen = ?, DienThoai = ?, Quyen = ? WHERE ID = ?";
         try (Connection con = DatabaseConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            
+
             ps.setString(1, nv.getUsername());
             ps.setString(2, nv.getPassword());
             ps.setString(3, nv.getHoTen());
             ps.setString(4, nv.getDienThoai());
             ps.setInt(5, nv.getQuyen());
             ps.setInt(6, nv.getId());
-            
+
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -135,7 +135,7 @@ public class NhanVienDAO {
         String sql = "DELETE FROM NhanVien WHERE ID = ?";
         try (Connection con = DatabaseConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            
+
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {

@@ -18,11 +18,11 @@ public class HoaDonDAO {
     public List<HoaDon> getAll() {
         List<HoaDon> list = new ArrayList<>();
         String sql = "SELECT * FROM HoaDon ORDER BY NgayLap DESC";
-        
+
         try (Connection con = DatabaseConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
-            
+
             while (rs.next()) {
                 HoaDon hd = new HoaDon();
                 hd.setId(rs.getInt("ID"));
@@ -70,7 +70,7 @@ public class HoaDonDAO {
             // 2. Giao việc cho các DAO khác xử lý, TRUYỀN CHUNG CÁI CONNECTION VÀO
             for (ChiTietHoaDon cthd : listCTHD) {
                 cthd.setIdHoaDon(idHoaDonMoi); // Gán ID hóa đơn mới vào chi tiết
-                
+
                 cthdDAO.insert(con, cthd); // Lệnh gọi ChiTietHoaDonDAO
                 giayDAO.truTonKho(con, cthd.getIdGiay(), cthd.getSoLuongMua()); // Lệnh gọi GiayDAO
             }

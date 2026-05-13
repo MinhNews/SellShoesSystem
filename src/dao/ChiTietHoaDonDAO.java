@@ -16,12 +16,12 @@ public class ChiTietHoaDonDAO {
     public List<ChiTietHoaDon> getByIdHoaDon(int idHoaDon) {
         List<ChiTietHoaDon> list = new ArrayList<>();
         String sql = "SELECT * FROM ChiTietHoaDon WHERE ID_HoaDon = ?";
-        
+
         try (Connection con = DatabaseConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            
+
             ps.setInt(1, idHoaDon);
-            
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     ChiTietHoaDon cthd = new ChiTietHoaDon();

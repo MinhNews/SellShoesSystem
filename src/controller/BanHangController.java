@@ -1,11 +1,15 @@
 package controller;
-import view.BanHangPanel;
+
 import model.NhanVien;
+import view.BanHangPanel;
 
 public class BanHangController {
+    private BanHangPanel view;
+
     public BanHangController(BanHangPanel panel, NhanVien user) {
+        this.view = panel;
     }
-    // Thêm hàm này để hết lỗi ở dòng 97 của MainDashboard
+
     public void loadKhoGiay() {
     }
 }

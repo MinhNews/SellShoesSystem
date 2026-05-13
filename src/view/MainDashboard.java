@@ -2,116 +2,129 @@ package view;
 
 import model.NhanVien;
 import javax.swing.*;
-
+import javax.swing.border.EmptyBorder;
 import controller.BanHangController;
 import controller.GiayController;
-import controller.KhachHangController; 
-import controller.LoaiGiayController; // IMPORT THÊM LOẠI GIÀY
-
+import controller.KhachHangController;
+import controller.LoaiGiayController;
 import java.awt.*;
 
 public class MainDashboard extends JFrame {
     private NhanVien currentUser;
-    private JPanel mainContentPanel; 
-    private CardLayout cardLayout; 
+    private JPanel mainContentPanel;
+    private CardLayout cardLayout;
 
     public MainDashboard(NhanVien user) {
         this.currentUser = user;
-        
+
         setTitle("Hệ Thống Quản Lý Bán Giày - Nhân viên: " + currentUser.getHoTen());
-        setSize(1200, 700); 
+        setSize(1200, 750);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        
+
         setLayout(new BorderLayout());
 
-        // --- TẠO MENU BÊN TRÁI (Sidebar) ---
+        // --- 1. TẠO MENU BÊN TRÁI (Sidebar) ---
         JPanel sidebarPanel = new JPanel();
-        // Tăng GridLayout lên 8 hàng để đủ chỗ cho nút Loại Giày
-        sidebarPanel.setLayout(new GridLayout(8, 1, 10, 10)); 
-        sidebarPanel.setPreferredSize(new Dimension(200, 600));
-        sidebarPanel.setBackground(Color.LIGHT_GRAY);
+        sidebarPanel.setLayout(new GridLayout(10, 1, 5, 5)); // Tăng lên 10 để các nút không bị quá to
+        sidebarPanel.setPreferredSize(new Dimension(230, 700));
 
-        JButton btnLoaiGiay = new JButton("Danh mục Loại Giày"); // THÊM NÚT LOẠI GIÀY
-        JButton btnGiay = new JButton("Quản lý Giày");
-        JButton btnHoaDon = new JButton("Lập Hóa Đơn"); 
-        JButton btnKhachHang = new JButton("Khách Hàng");
-        JButton btnThongKe = new JButton("Thống Kê");
-        JButton btnDangXuat = new JButton("Đăng Xuất");
+        // Màu Sidebar xám đậm sang trọng
+        sidebarPanel.setBackground(new Color(245, 246, 250));
+        sidebarPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        sidebarPanel.add(new JLabel("  MENU CHÍNH", SwingConstants.CENTER));
-        sidebarPanel.add(btnLoaiGiay); // GẮN NÚT VÀO SIDEBAR
+        JButton btnLoaiGiay = new JButton(" Danh mục Loại Giày");
+        JButton btnGiay = new JButton(" Quản lý Giày");
+        JButton btnHoaDon = new JButton(" Lập Hóa Đơn");
+        JButton btnKhachHang = new JButton(" Khách Hàng");
+        JButton btnThongKe = new JButton(" Thống Kê");
+        JButton btnDangXuat = new JButton(" Đăng Xuất");
+
+        // --- LÀM ĐẸP NÚT BẤM VỚI FLATLAF ---
+        JButton[] menuButtons = {btnLoaiGiay, btnGiay, btnHoaDon, btnKhachHang, btnThongKe, btnDangXuat};
+        for (JButton btn : menuButtons) {
+            btn.putClientProperty("JButton.buttonType", "menu"); // Kiểu nút phẳng
+            btn.setHorizontalAlignment(SwingConstants.LEFT); // Căn lề trái
+            btn.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+            btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            btn.setPreferredSize(new Dimension(200, 45));
+        }
+
+        JLabel lblMenuTitle = new JLabel("  MENU CHÍNH");
+        lblMenuTitle.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblMenuTitle.setForeground(new Color(45, 52, 54));
+
+        sidebarPanel.add(lblMenuTitle);
+        sidebarPanel.add(btnLoaiGiay);
         sidebarPanel.add(btnGiay);
         sidebarPanel.add(btnHoaDon);
         sidebarPanel.add(btnKhachHang);
-        
-        // Phân quyền cơ bản: Chỉ Admin (Quyen == 0) mới thấy nút Thống kê
+
         if (currentUser.getQuyen() == 0) {
             sidebarPanel.add(btnThongKe);
         }
-        
-        sidebarPanel.add(new JLabel("")); 
+
+        // Khoảng trống đẩy nút Đăng xuất xuống dưới
+        sidebarPanel.add(new JLabel(""));
+        sidebarPanel.add(new JLabel(""));
         sidebarPanel.add(btnDangXuat);
 
-        // --- TẠO KHU VỰC NỘI DUNG BÊN PHẢI ---
+        // Nút đăng xuất cho màu đỏ nhẹ để phân biệt
+        btnDangXuat.setForeground(new Color(231, 76, 60));
+
+        // --- 2. TẠO KHU VỰC NỘI DUNG BÊN PHẢI ---
         cardLayout = new CardLayout();
-        mainContentPanel = new JPanel(cardLayout); 
+        mainContentPanel = new JPanel(cardLayout);
         mainContentPanel.setBackground(Color.WHITE);
-        
+
         JLabel welcomeLabel = new JLabel("Chọn một chức năng bên Menu để bắt đầu", SwingConstants.CENTER);
-        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        welcomeLabel.setFont(new Font("Segoe UI", Font.ITALIC, 16));
         mainContentPanel.add(welcomeLabel, "Welcome");
 
-        // --- KHỞI TẠO CÁC PANEL VÀ CONTROLLER ---
-        // 1. Khởi tạo Loại Giày
+        // --- 3. KHỞI TẠO CÁC PANEL VÀ CONTROLLER ---
         LoaiGiayPanel pnlLoaiGiay = new LoaiGiayPanel();
         new LoaiGiayController(pnlLoaiGiay);
 
-        // 2. Khởi tạo Quản lý Giày (Gán vào biến giayCtrl để lát gọi refresh)
         QuanLyGiayPanel pnlGiay = new QuanLyGiayPanel();
-        GiayController giayCtrl = new GiayController(pnlGiay); 
+        GiayController giayCtrl = new GiayController(pnlGiay);
 
-        // 3. Khởi tạo Bán Hàng
+        // Sử dụng BanHangPanel & KhachHangPanel Thái vừa hoàn thành Quest 2
         BanHangPanel pnlBanHang = new BanHangPanel();
         BanHangController banHangCtrl = new BanHangController(pnlBanHang, currentUser);
 
-        // 4. Khởi tạo Khách Hàng
         KhachHangPanel pnlKhachHang = new KhachHangPanel();
-        new KhachHangController(pnlKhachHang); 
+        new KhachHangController(pnlKhachHang);
 
-        // Gắn vào CardLayout với các từ khóa nhận diện
-        mainContentPanel.add(pnlLoaiGiay, "LoaiGiay"); // Gắn Loại Giày
+        mainContentPanel.add(pnlLoaiGiay, "LoaiGiay");
         mainContentPanel.add(pnlGiay, "Giay");
         mainContentPanel.add(pnlBanHang, "BanHang");
         mainContentPanel.add(pnlKhachHang, "KhachHang");
 
-        // --- XỬ LÝ SỰ KIỆN BẤM NÚT ĐỂ CHUYỂN TRANG ---
+        // --- 4. XỬ LÝ SỰ KIỆN CHUYỂN TRANG ---
         btnLoaiGiay.addActionListener(e -> cardLayout.show(mainContentPanel, "LoaiGiay"));
 
         btnGiay.addActionListener(e -> {
-            giayCtrl.refreshLoaiGiay(); // <-- F5 lại ComboBox Loại Giày trước khi show
+            giayCtrl.refreshLoaiGiay();
             cardLayout.show(mainContentPanel, "Giay");
         });
 
         btnHoaDon.addActionListener(e -> {
-            banHangCtrl.loadKhoGiay(); // <-- F5 lại kho giày trước khi show
+            banHangCtrl.loadKhoGiay();
             cardLayout.show(mainContentPanel, "BanHang");
         });
 
         btnKhachHang.addActionListener(e -> cardLayout.show(mainContentPanel, "KhachHang"));
 
-        // Xử lý Đăng xuất
         btnDangXuat.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(this, "Bạn có muốn đăng xuất không?", "Xác nhận", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                dispose(); 
+                dispose();
                 view.LoginView login = new view.LoginView();
                 new controller.LoginController(login);
                 login.setVisible(true);
             }
         });
 
-        // Gắn 2 mảng vào Khung chính
         add(sidebarPanel, BorderLayout.WEST);
         add(mainContentPanel, BorderLayout.CENTER);
     }
