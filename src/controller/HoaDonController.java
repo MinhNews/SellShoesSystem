@@ -9,6 +9,8 @@ import model.Giay;
 import view.HoaDonPanel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.util.List;
 
 public class HoaDonController {
@@ -24,6 +26,15 @@ public class HoaDonController {
         this.giayDAO = new GiayDAO();
 
         loadHoaDon();
+
+        // NÚT LÀM MỚI DANH SÁCH
+        this.view.addLamMoiListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                loadHoaDon();
+                view.getModelChiTiet().setRowCount(0); // Xóa trắng bảng chi tiết
+            }
+        });
 
         // LOGIC CHÍNH: Click bảng trên -> Load bảng dưới
         this.view.getTblHoaDon().addMouseListener(new MouseAdapter() {

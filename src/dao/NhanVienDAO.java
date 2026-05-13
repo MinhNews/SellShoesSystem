@@ -112,23 +112,34 @@ public class NhanVienDAO {
 
     // 5. Cập nhật thông tin nhân viên
     public boolean update(NhanVien nv) {
-        String sql = "UPDATE NhanVien SET Username = ?, Password = ?, HoTen = ?, DienThoai = ?, Quyen = ? WHERE ID = ?";
+    String sql;
+    // Nếu password rỗng -> không cập nhật cột password
+    if (nv.getPassword() == null || nv.getPassword().isEmpty()) {
+        sql = "UPDATE NhanVien SET Username=?, HoTen=?, DienThoai=?, Quyen=? WHERE ID=?";
         try (Connection con = DatabaseConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
-            
+            ps.setString(1, nv.getUsername());
+            ps.setString(2, nv.getHoTen());
+            ps.setString(3, nv.getDienThoai());
+            ps.setInt(4, nv.getQuyen());
+            ps.setInt(5, nv.getId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) { e.printStackTrace(); }
+    } else {
+        sql = "UPDATE NhanVien SET Username=?, Password=?, HoTen=?, DienThoai=?, Quyen=? WHERE ID=?";
+        try (Connection con = DatabaseConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, nv.getUsername());
             ps.setString(2, nv.getPassword());
             ps.setString(3, nv.getHoTen());
             ps.setString(4, nv.getDienThoai());
             ps.setInt(5, nv.getQuyen());
             ps.setInt(6, nv.getId());
-            
             return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+        } catch (SQLException e) { e.printStackTrace(); }
     }
+    return false;
+}
 
     // 6. Xóa nhân viên 
     public boolean delete(int id) {

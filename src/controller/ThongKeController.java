@@ -55,6 +55,14 @@ public class ThongKeController {
 
         // 3. Xử lý vẽ biểu đồ Top 5 Giày bán chạy
         veBieuDoTopGiay(tuNgay, denNgay);
+        
+        // 4. Đổ dữ liệu vào bảng Chi Tiết bên phải
+        javax.swing.table.DefaultTableModel model = view.getModelThongKe();
+        model.setRowCount(0); // Xóa data cũ
+        List<Object[]> listChiTiet = dao.getChiTietDoanhThu(tuNgay, denNgay);
+        for(Object[] row : listChiTiet) {
+            model.addRow(row);
+        }
 
     }
 

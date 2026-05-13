@@ -34,7 +34,7 @@ public class HoaDonPanel extends JPanel {
         pnlTop.add(new JScrollPane(tblHoaDon), BorderLayout.CENTER);
 
         // 2. Bảng Chi Tiết Hóa Đơn (Phía dưới)
-        String[] colChiTiet = {"Mã Giày", "Tên Giày", "Size", "Số lượng", "Đơn giá"};
+        String[] colChiTiet = {"Mã Giày", "Tên Giày", "Số Lượng", "Đơn Giá", "Thành Tiền"};
         modelChiTiet = new DefaultTableModel(colChiTiet, 0) {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         };

@@ -67,4 +67,23 @@ public class ThongKeDAO {
         } catch (SQLException e) { e.printStackTrace(); }
         return list;
     }
+
+    // Lấy chi tiết doanh thu từng ngày để đổ vào JTable
+    public List<Object[]> getChiTietDoanhThu(Date tuNgay, Date denNgay) {
+        List<Object[]> list = new ArrayList<>();
+        String sql = "SELECT DATE(NgayLap) as Ngay, COUNT(ID) as SoDon, SUM(TongTien) as DoanhThu " +
+                     "FROM HoaDon WHERE DATE(NgayLap) BETWEEN ? AND ? " +
+                     "GROUP BY DATE(NgayLap) ORDER BY Ngay DESC";
+        try (Connection con = DatabaseConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setDate(1, new java.sql.Date(tuNgay.getTime()));
+            ps.setDate(2, new java.sql.Date(denNgay.getTime()));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new Object[]{ rs.getDate("Ngay"), rs.getInt("SoDon"), rs.getDouble("DoanhThu") });
+                }
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
+    }
 }
