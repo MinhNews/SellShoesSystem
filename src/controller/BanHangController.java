@@ -161,42 +161,43 @@ public class BanHangController {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (gioHang.isEmpty()) {
-                view.showMessage("Giỏ hàng trống, không thể thanh toán!");
-                return;
+                view.showMessage("Giỏ hàng trống, không thể thanh toán!"); return;
             }
 
-            // 1. Tạo đối tượng Hóa Đơn
             HoaDon hd = new HoaDon();
             hd.setIdNhanVien(nhanVienDangTruc.getId());
+            hd.setIdKhachHang(khachHangHienTai != null ? khachHangHienTai.getId() : 0);
+
+            // Tính tiền gốc
+            double tongTienGoc = 0;
+            for (ChiTietHoaDon ct : gioHang) tongTienGoc += ct.getSoLuongMua() * ct.getDonGia();
             
-            // Nếu có khách hàng thì gắn ID, không thì gán 0
-            if (khachHangHienTai != null) {
-                hd.setIdKhachHang(khachHangHienTai.getId());
-            } else {
-                hd.setIdKhachHang(0); 
+            // LOGIC MỚI: Xử lý điểm tích lũy
+            double soTienPhaiTra = tongTienGoc;
+            int diemDaDung = 0;
+            
+            if (view.isDungDiem() && khachHangHienTai != null && khachHangHienTai.getDiemTichLuy() > 0) {
+                double tienGiamGia = khachHangHienTai.getDiemTichLuy() * 1000; // 1 điểm = 1k
+                diemDaDung = khachHangHienTai.getDiemTichLuy();
+                soTienPhaiTra -= tienGiamGia;
+                if (soTienPhaiTra < 0) soTienPhaiTra = 0; // Tránh việc tiền bị âm
             }
+            hd.setTongTien(soTienPhaiTra);
 
-            // Tính lại tổng tiền cho chắc ăn
-            double tongTien = 0;
-            for (ChiTietHoaDon ct : gioHang) tongTien += ct.getSoLuongMua() * ct.getDonGia();
-            hd.setTongTien(tongTien);
-
-            // 2. Gọi Hóa Đơn DAO xử lý Transaction
             if (hdDAO.thanhToanHoaDon(hd, gioHang)) {
-                // 3. Nếu thành công, cộng điểm cho khách (Giả sử 20k = 1 điểm)
                 if (khachHangHienTai != null) {
-                    int diemCongThêm = (int) (tongTien / 20000);
-                    khDAO.updateDiem(khachHangHienTai.getId(), diemCongThêm);
+                    // Nếu có xài điểm thì trừ sạch điểm cũ về 0
+                    if (diemDaDung > 0) {
+                        khDAO.updateDiem(khachHangHienTai.getId(), -diemDaDung); 
+                    }
+                    // Tính điểm mới cộng thêm cho hóa đơn này
+                    int diemCongThem = (int) (soTienPhaiTra / 100000);
+                    khDAO.updateDiem(khachHangHienTai.getId(), diemCongThem);
                 }
 
-                view.showMessage("THANH TOÁN THÀNH CÔNG!\nTổng tiền: " + tongTien + " VNĐ");
-                
-                // 4. Dọn dẹp để chuẩn bị bán đơn mới
-                gioHang.clear();
-                khachHangHienTai = null;
-                view.clearThanhToan();
-                capNhatGioHang();
-                loadKhoGiay(); // Trừ tồn kho xong thì phải load lại kho
+                view.showMessage("THANH TOÁN THÀNH CÔNG!\nTổng tiền thu khách: " + soTienPhaiTra + " VNĐ");
+                gioHang.clear(); khachHangHienTai = null; view.clearThanhToan();
+                capNhatGioHang(); loadKhoGiay();
             } else {
                 view.showMessage("Thanh toán thất bại! Đã Rollback giao dịch.");
             }

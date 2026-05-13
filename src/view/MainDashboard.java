@@ -6,7 +6,7 @@ import javax.swing.*;
 import controller.BanHangController;
 import controller.GiayController;
 import controller.KhachHangController; 
-import controller.LoaiGiayController; // IMPORT THÊM LOẠI GIÀY
+import controller.LoaiGiayController; 
 
 import java.awt.*;
 
