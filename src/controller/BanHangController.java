@@ -40,6 +40,7 @@ public class BanHangController {
         this.view.addThemVaoGioListener(new ThemVaoGioListener());
         this.view.addXoaKhoiGioListener(new XoaKhoiGioListener());
         this.view.addThanhToanListener(new ThanhToanListener());
+        this.view.addTimKiemGiayListener(new SearchGiayListener());
     }
 
     public void loadKhoGiay() {
@@ -200,6 +201,33 @@ public class BanHangController {
                 capNhatGioHang(); loadKhoGiay();
             } else {
                 view.showMessage("Thanh toán thất bại! Đã Rollback giao dịch.");
+            }
+        }
+    }
+
+    // Xử lý tìm kiếm Real-time khi gõ phím
+    class SearchGiayListener extends java.awt.event.KeyAdapter {
+        @Override
+        public void keyReleased(java.awt.event.KeyEvent e) {
+            String keyword = view.getTimKiemGiay();
+            javax.swing.table.DefaultTableModel model = view.getModelKho();
+            model.setRowCount(0); // Xóa trắng bảng cũ
+
+            java.util.List<Giay> list;
+            if (keyword.isEmpty()) {
+                list = giayDAO.getAll(); // Gõ xong xóa đi thì load lại toàn bộ kho
+            } else {
+                list = giayDAO.search(keyword); // Gọi hàm search bên GiayDAO
+            }
+
+            for (Giay g : list) {
+                // Màn hình POS thì chỉ hiển thị giày Available và Còn hàng (Tồn > 0)
+                if (g.getTrangThai().equals("Available") && g.getSoLuongTon() > 0) {
+                    model.addRow(new Object[]{
+                        g.getId(), g.getTenGiay(), g.getThuongHieu(),
+                        g.getSize(), g.getGiaBan(), g.getSoLuongTon()
+                    });
+                }
             }
         }
     }
