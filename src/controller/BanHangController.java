@@ -115,22 +115,28 @@ public class BanHangController {
                 double giaBan = (double) view.getTblKhoGiay().getValueAt(row, 4);
                 int tonKho = (int) view.getTblKhoGiay().getValueAt(row, 5);
 
-                if (soLuongMua > tonKho) {
-                    view.showMessage("Kho không đủ số lượng!");
-                    return;
-                }
+                // --- LOGIC MỚI: TÌM SỐ LƯỢNG ĐÃ CÓ TRONG GIỎ TRƯỚC ---
+                int soLuongDaCoTrongGio = 0;
+                ChiTietHoaDon sanPhamTrongGio = null;
 
-                // Kiểm tra xem trong giỏ đã có đôi này chưa, nếu có thì cộng dồn
-                boolean daCo = false;
                 for (ChiTietHoaDon ct : gioHang) {
                     if (ct.getIdGiay() == idGiay) {
-                        ct.setSoLuongMua(ct.getSoLuongMua() + soLuongMua);
-                        daCo = true;
+                        soLuongDaCoTrongGio = ct.getSoLuongMua();
+                        sanPhamTrongGio = ct;
                         break;
                     }
                 }
 
-                if (!daCo) {
+                // --- BỨC TƯỜNG THÉP: So sánh TỔNG (Đã có + Muốn mua thêm) với Tồn kho ---
+                if ((soLuongDaCoTrongGio + soLuongMua) > tonKho) {
+                    view.showMessage("Kho không đủ!");
+                    return;
+                }
+
+                // Nếu hợp lệ thì mới tiến hành thêm hoặc cộng dồn
+                if (sanPhamTrongGio != null) {
+                    sanPhamTrongGio.setSoLuongMua(soLuongDaCoTrongGio + soLuongMua);
+                } else {
                     ChiTietHoaDon ctMoi = new ChiTietHoaDon();
                     ctMoi.setIdGiay(idGiay);
                     ctMoi.setSoLuongMua(soLuongMua);
