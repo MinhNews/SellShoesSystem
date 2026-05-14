@@ -1,88 +1,170 @@
 package view;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class NhanVienPanel extends JPanel {
-    // 1. Khai báo các thành phần giao diện theo đúng yêu cầu [cite: 10, 22]
     private JTextField txtId, txtUsername, txtHoTen, txtSdt;
-    private JPasswordField txtPassword; // Dùng JPasswordField để bảo mật 
-    private JComboBox<String> cbQuyen; // Chọn Admin (0) hoặc Nhân viên (1) [cite: 10, 30]
+    private JPasswordField txtPassword; 
+    private JComboBox<String> cbQuyen; 
     private JButton btnThem, btnSua, btnXoa, btnLamMoi;
     private JTable tblNhanVien;
     private DefaultTableModel modelNhanVien;
 
-    public NhanVienPanel() {
-        setLayout(new BorderLayout(10, 10));
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+    // --- ĐỊNH NGHĨA MÀU SẮC & FONT CHUẨN UI MỚI ---
+    private Color primaryText = new Color(30, 41, 59);    // Slate 800
+    private Color borderColor = new Color(226, 232, 240); // Slate 200
+    private Font mainFont = new Font("Segoe UI", Font.PLAIN, 14);
+    private Font boldFont = new Font("Segoe UI", Font.BOLD, 14);
 
-        // --- FORM NHẬP LIỆU  ---
+    public NhanVienPanel() {
+        setLayout(new BorderLayout(15, 15));
+        setBackground(Color.WHITE); // Phủ nền trắng
+        setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+
+        // ==========================================
+        // --- FORM NHẬP LIỆU ---
+        // ==========================================
         JPanel pnlNorth = new JPanel(new BorderLayout(5, 5));
+        pnlNorth.setBackground(Color.WHITE);
         
-        JPanel pnlForm = new JPanel(new GridLayout(3, 4, 10, 10)); // Tăng lên 3 hàng để đủ chỗ
-        pnlForm.setBorder(BorderFactory.createTitledBorder("Quản Lý Tài Khoản Nhân Viên"));
+        JPanel pnlForm = new JPanel(new GridLayout(3, 4, 15, 15));
+        pnlForm.setBackground(Color.WHITE);
+        pnlForm.setBorder(BorderFactory.createCompoundBorder(
+            createModernTitledBorder("Quản Lý Tài Khoản Nhân Viên"),
+            BorderFactory.createEmptyBorder(10, 15, 15, 15)
+        ));
         
-        pnlForm.add(new JLabel("Mã Nhân Viên:")); 
-        txtId = new JTextField(); txtId.setEditable(false); pnlForm.add(txtId);
+        // Dòng 1
+        JLabel lblId = new JLabel("Mã Nhân Viên:"); lblId.setFont(mainFont);
+        txtId = new JTextField(); 
+        txtId.setFont(mainFont);
+        txtId.setEditable(false); 
+        txtId.setBackground(new Color(248, 250, 252)); // Nền xám nhạt chỉ định không được sửa
+        pnlForm.add(lblId); pnlForm.add(txtId);
         
-        pnlForm.add(new JLabel("Tên Đăng Nhập:")); 
-        txtUsername = new JTextField(); pnlForm.add(txtUsername);
+        JLabel lblUsername = new JLabel("Tên Đăng Nhập:"); lblUsername.setFont(mainFont);
+        txtUsername = new JTextField(); 
+        txtUsername.setFont(mainFont);
+        pnlForm.add(lblUsername); pnlForm.add(txtUsername);
         
-        pnlForm.add(new JLabel("Mật Khẩu:")); 
-        txtPassword = new JPasswordField(); pnlForm.add(txtPassword); // Thành phần bổ sung 
+        // Dòng 2
+        JLabel lblPass = new JLabel("Mật Khẩu:"); lblPass.setFont(mainFont);
+        txtPassword = new JPasswordField(); 
+        txtPassword.setFont(mainFont);
+        pnlForm.add(lblPass); pnlForm.add(txtPassword);
         
-        pnlForm.add(new JLabel("Họ và Tên:")); 
-        txtHoTen = new JTextField(); pnlForm.add(txtHoTen);
+        JLabel lblHoTen = new JLabel("Họ và Tên:"); lblHoTen.setFont(mainFont);
+        txtHoTen = new JTextField(); 
+        txtHoTen.setFont(mainFont);
+        pnlForm.add(lblHoTen); pnlForm.add(txtHoTen);
         
-        pnlForm.add(new JLabel("Số Điện Thoại:")); 
-        txtSdt = new JTextField(); pnlForm.add(txtSdt);
+        // Dòng 3
+        JLabel lblSdt = new JLabel("Số Điện Thoại:"); lblSdt.setFont(mainFont);
+        txtSdt = new JTextField(); 
+        txtSdt.setFont(mainFont);
+        pnlForm.add(lblSdt); pnlForm.add(txtSdt);
         
-        pnlForm.add(new JLabel("Quyền Hạn:")); 
+        JLabel lblQuyen = new JLabel("Quyền Hạn:"); lblQuyen.setFont(mainFont);
         String[] quyen = {"Admin", "Nhân viên"};
-        cbQuyen = new JComboBox<>(quyen); // 0 - Admin, 1 - Nhân viên [cite: 10, 30]
-        pnlForm.add(cbQuyen);
+        cbQuyen = new JComboBox<>(quyen); 
+        cbQuyen.setFont(mainFont);
+        cbQuyen.setBackground(Color.WHITE);
+        pnlForm.add(lblQuyen); pnlForm.add(cbQuyen);
         
         pnlNorth.add(pnlForm, BorderLayout.CENTER);
 
-        // --- BẢNG HIỂN THỊ [cite: 32, 33] ---
+        // ==========================================
+        // --- BẢNG HIỂN THỊ ---
+        // ==========================================
         String[] cols = {"Mã NV", "Tên Đăng Nhập", "Họ Tên", "SĐT", "Quyền"};
         modelNhanVien = new DefaultTableModel(cols, 0) {
             @Override public boolean isCellEditable(int r, int c) { return false; }
         };
         tblNhanVien = new JTable(modelNhanVien);
-        tblNhanVien.setRowHeight(25);
+        setupTable(tblNhanVien);
 
-        // --- CÁC NÚT BẤM ---
-        JPanel pnlSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        btnThem = new JButton("Thêm Mới"); btnThem.setBackground(new Color(40, 167, 69)); btnThem.setForeground(Color.WHITE);
-        btnSua = new JButton("Cập Nhật"); btnSua.setBackground(new Color(23, 162, 184)); btnSua.setForeground(Color.WHITE);
-        btnXoa = new JButton("Xóa"); btnXoa.setBackground(new Color(220, 53, 69)); btnXoa.setForeground(Color.WHITE);
-        btnLamMoi = new JButton("Làm Mới");
+        JScrollPane scrollPane = new JScrollPane(tblNhanVien);
+        scrollPane.getViewport().setBackground(Color.WHITE);
+        scrollPane.setBorder(BorderFactory.createLineBorder(borderColor));
+
+        // ==========================================
+        // --- CÁC NÚT BẤM (BOTTOM) ---
+        // ==========================================
+        JPanel pnlSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        pnlSouth.setBackground(Color.WHITE);
         
-        JButton[] btns = {btnThem, btnSua, btnXoa, btnLamMoi};
-        for (JButton b : btns) { 
-            b.putClientProperty("JButton.buttonType", "roundRect"); 
-            pnlSouth.add(b); 
-        }
+        btnLamMoi = new JButton("Làm Mới");
+        styleButton(btnLamMoi, Color.WHITE, primaryText);
+        btnLamMoi.setBorder(BorderFactory.createLineBorder(borderColor));
+        
+        btnThem = new JButton("Thêm Mới"); 
+        styleButton(btnThem, new Color(16, 185, 129), Color.WHITE); // Emerald
+        
+        btnSua = new JButton("Cập Nhật"); 
+        styleButton(btnSua, new Color(14, 165, 233), Color.WHITE);   // Sky Blue
+        
+        btnXoa = new JButton("Xóa"); 
+        styleButton(btnXoa, new Color(239, 68, 68), Color.WHITE);     // Rose Red
+        
+        pnlSouth.add(btnLamMoi);
+        pnlSouth.add(btnThem); 
+        pnlSouth.add(btnSua); 
+        pnlSouth.add(btnXoa); 
 
         add(pnlNorth, BorderLayout.NORTH);
-        add(new JScrollPane(tblNhanVien), BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
         add(pnlSouth, BorderLayout.SOUTH);
     }
 
-    // NHÓM HÀM GETTER 
+    // --- HÀM TIỆN ÍCH DÙNG CHUNG ĐỂ STYLE GIAO DIỆN ---
+    private TitledBorder createModernTitledBorder(String title) {
+        return BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(borderColor, 1, true),
+            title, TitledBorder.LEFT, TitledBorder.TOP, boldFont, primaryText
+        );
+    }
+
+    private void styleButton(JButton btn, Color bg, Color fg) {
+        btn.setBackground(bg);
+        btn.setForeground(fg);
+        btn.setFont(boldFont);
+        btn.putClientProperty("JButton.buttonType", "roundRect");
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setFocusPainted(false);
+    }
+
+    private void setupTable(JTable table) {
+        table.setFont(mainFont);
+        table.setRowHeight(30);
+        table.setSelectionBackground(new Color(226, 232, 240)); 
+        table.setSelectionForeground(Color.BLACK);
+        table.setShowVerticalLines(false); 
+        table.setGridColor(borderColor);
+        
+        table.getTableHeader().setFont(boldFont);
+        table.getTableHeader().setBackground(new Color(241, 245, 249)); 
+        table.getTableHeader().setForeground(primaryText);
+        table.getTableHeader().setPreferredSize(new Dimension(100, 35));
+        table.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, borderColor));
+        
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    }
+
+    // ==========================================
+    // --- GETTER & SETTER & LISTENER BẢN GỐC ---
+    // ==========================================
     public String getId() { return txtId.getText().trim(); }
     public String getUsername() { return txtUsername.getText().trim(); }
     public String getPassword() { return new String(txtPassword.getPassword()); }
     public String getHoTen() { return txtHoTen.getText().trim(); }
     public String getDienThoai() { return txtSdt.getText().trim(); }
     
-    // Lấy index: 0 là Admin, 1 là Nhân viên 
     public int getQuyen() { return cbQuyen.getSelectedIndex(); } 
 
-    // NHÓM HÀM THAO TÁC UI
     public DefaultTableModel getModelNhanVien() { return modelNhanVien; }
     public JTable getTblNhanVien() { return tblNhanVien; }
 
@@ -92,7 +174,7 @@ public class NhanVienPanel extends JPanel {
         txtHoTen.setText(hoten);
         txtSdt.setText(sdt);
         cbQuyen.setSelectedIndex(quyenIndex);
-        txtPassword.setText("******"); // Gán cứng mật khẩu khi đổ data lên 
+        txtPassword.setText("******"); 
     }
 
     public void clearForm() {
@@ -101,14 +183,11 @@ public class NhanVienPanel extends JPanel {
         txtPassword.setText("");
         txtHoTen.setText("");
         txtSdt.setText("");
-        cbQuyen.setSelectedIndex(1); // Mặc định chọn Nhân viên
+        cbQuyen.setSelectedIndex(1); 
     }
 
-    public void showMessage(String msg) {
-        JOptionPane.showMessageDialog(this, msg);
-    }
+    public void showMessage(String msg) { JOptionPane.showMessageDialog(this, msg); }
 
-    //NHÓM HÀM GẮN LISTENER
     public void addThemListener(ActionListener l) { btnThem.addActionListener(l); }
     public void addSuaListener(ActionListener l) { btnSua.addActionListener(l); }
     public void addXoaListener(ActionListener l) { btnXoa.addActionListener(l); }

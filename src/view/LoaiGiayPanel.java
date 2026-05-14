@@ -1,6 +1,7 @@
 package view;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -11,21 +12,47 @@ public class LoaiGiayPanel extends JPanel {
     private JTable tblLoaiGiay;
     private DefaultTableModel modelLoaiGiay;
 
+    // --- ĐỊNH NGHĨA MÀU SẮC & FONT CHUẨN UI MỚI ---
+    private Color primaryText = new Color(30, 41, 59);   // Chữ xám đậm
+    private Color borderColor = new Color(226, 232, 240); // Viền xám nhạt
+    private Font mainFont = new Font("Segoe UI", Font.PLAIN, 14);
+    private Font boldFont = new Font("Segoe UI", Font.BOLD, 14);
+
     public LoaiGiayPanel() {
-        setLayout(new BorderLayout(10, 10));
-        setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        setLayout(new BorderLayout(15, 15));
+        setBackground(Color.WHITE); // Nền trắng toàn tập
+        setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         // --- KHU VỰC TOP: FORM NHẬP LIỆU ---
-        JPanel pnlNorth = new JPanel(new GridLayout(1, 4, 10, 10));
-        pnlNorth.setBorder(BorderFactory.createTitledBorder("Thông tin Danh Mục Loại Giày"));
+        JPanel pnlNorth = new JPanel(new GridLayout(1, 4, 15, 10));
+        pnlNorth.setBackground(Color.WHITE);
         
-        pnlNorth.add(new JLabel("ID (Tự động):"));
+        // Custom TitledBorder hiện đại
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(borderColor, 1, true),
+            "Thông tin Danh Mục Loại Giày",
+            TitledBorder.LEFT, TitledBorder.TOP,
+            boldFont, primaryText
+        );
+        pnlNorth.setBorder(BorderFactory.createCompoundBorder(
+            titledBorder, 
+            BorderFactory.createEmptyBorder(10, 15, 15, 15) // Padding bên trong khung
+        ));
+        
+        JLabel lblId = new JLabel("ID (Tự động):"); lblId.setFont(mainFont);
+        pnlNorth.add(lblId);
+        
         txtId = new JTextField(); 
+        txtId.setFont(mainFont);
         txtId.setEditable(false); 
+        txtId.setBackground(new Color(248, 250, 252)); // Nền hơi xám cho ô không được sửa
         pnlNorth.add(txtId);
         
-        pnlNorth.add(new JLabel("Tên Loại Giày:"));
+        JLabel lblTen = new JLabel("Tên Loại Giày:"); lblTen.setFont(mainFont);
+        pnlNorth.add(lblTen);
+        
         txtTenLoai = new JTextField(); 
+        txtTenLoai.setFont(mainFont);
         pnlNorth.add(txtTenLoai);
 
         // --- KHU VỰC CENTER: BẢNG DỮ LIỆU ---
@@ -34,29 +61,56 @@ public class LoaiGiayPanel extends JPanel {
             public boolean isCellEditable(int row, int column) { return false; }
         };
         tblLoaiGiay = new JTable(modelLoaiGiay);
-        tblLoaiGiay.setRowHeight(25);
+        
+        // Làm đẹp Table
+        tblLoaiGiay.setFont(mainFont);
+        tblLoaiGiay.setRowHeight(30); // Dãn dòng cho dễ đọc
+        tblLoaiGiay.setSelectionBackground(new Color(226, 232, 240));
+        tblLoaiGiay.setSelectionForeground(Color.BLACK);
+        tblLoaiGiay.setShowVerticalLines(false); // Bỏ vạch kẻ dọc nhìn cho Web-style
+        tblLoaiGiay.setGridColor(borderColor);
+        
+        // Làm đẹp Header của Table
+        tblLoaiGiay.getTableHeader().setFont(boldFont);
+        tblLoaiGiay.getTableHeader().setBackground(new Color(241, 245, 249));
+        tblLoaiGiay.getTableHeader().setForeground(primaryText);
+        tblLoaiGiay.getTableHeader().setPreferredSize(new Dimension(100, 35)); // Header cao hơn tí
+        tblLoaiGiay.getTableHeader().setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, borderColor));
+
+        JScrollPane scrollPane = new JScrollPane(tblLoaiGiay);
+        scrollPane.getViewport().setBackground(Color.WHITE);
+        scrollPane.setBorder(BorderFactory.createLineBorder(borderColor));
 
         // --- KHU VỰC BOTTOM: NÚT CHỨC NĂNG ---
-        JPanel pnlSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        JPanel pnlSouth = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
+        pnlSouth.setBackground(Color.WHITE);
+        
+        btnLamMoi = new JButton("Làm Mới");
         btnThem = new JButton("Thêm Mới");
         btnSua = new JButton("Cập Nhật");
         btnXoa = new JButton("Xóa");
-        btnLamMoi = new JButton("Làm Mới");
         
-        JButton[] btns = {btnThem, btnSua, btnXoa, btnLamMoi};
-        for (JButton btn : btns) { btn.putClientProperty("JButton.buttonType", "roundRect"); }
-        btnThem.setBackground(new Color(40, 167, 69)); btnThem.setForeground(Color.WHITE);
-        btnSua.setBackground(new Color(23, 162, 184)); btnSua.setForeground(Color.WHITE);
-        btnXoa.setBackground(new Color(220, 53, 69)); btnXoa.setForeground(Color.WHITE);
-
-        pnlSouth.add(btnLamMoi); pnlSouth.add(btnThem); pnlSouth.add(btnSua); pnlSouth.add(btnXoa);
+        JButton[] btns = {btnLamMoi, btnThem, btnSua, btnXoa};
+        for (JButton btn : btns) { 
+            btn.setFont(boldFont);
+            btn.putClientProperty("JButton.buttonType", "roundRect"); 
+            btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            btn.setFocusPainted(false);
+            pnlSouth.add(btn);
+        }
+        
+        // Set màu đặc trưng
+        btnThem.setBackground(new Color(16, 185, 129)); btnThem.setForeground(Color.WHITE); // Emerald Green
+        btnSua.setBackground(new Color(14, 165, 233)); btnSua.setForeground(Color.WHITE);   // Sky Blue
+        btnXoa.setBackground(new Color(239, 68, 68)); btnXoa.setForeground(Color.WHITE);     // Red
+        btnLamMoi.setBackground(Color.WHITE); btnLamMoi.setForeground(primaryText);
 
         add(pnlNorth, BorderLayout.NORTH);
-        add(new JScrollPane(tblLoaiGiay), BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
         add(pnlSouth, BorderLayout.SOUTH);
     }
 
-    // --- GETTER ---
+    // --- CÁC HÀM GETTER / THAO TÁC / LISTENER GIỮ NGUYÊN BẢN GỐC ---
     public JTable getTblLoaiGiay() { return tblLoaiGiay; }
     public DefaultTableModel getModelLoaiGiay() { return modelLoaiGiay; }
     public String getId() { return txtId.getText().trim(); }
@@ -72,7 +126,6 @@ public class LoaiGiayPanel extends JPanel {
         txtTenLoai.setText("");
     }
 
-    // --- LISTENER ---
     public void addThemListener(ActionListener l) { btnThem.addActionListener(l); }
     public void addSuaListener(ActionListener l) { btnSua.addActionListener(l); }
     public void addXoaListener(ActionListener l) { btnXoa.addActionListener(l); }
