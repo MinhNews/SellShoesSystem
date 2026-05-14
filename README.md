@@ -108,5 +108,6 @@ Chạy file `src/Main.java`.
 
 ## 📄 Giấy phép
 
-Đề tài nhóm – Môn Lập Trình Java – Khoa Công Nghệ Thông Tin.
-MIT License
+Đây là đề tài nhóm môn Lập Trình Java – Khoa Công Nghệ Thông Tin.
+
+Project được phát hành dưới giấy phép MIT License.
