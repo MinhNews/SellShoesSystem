@@ -66,10 +66,15 @@ public class BanHangPanel extends JPanel {
         splitPane.setRightComponent(pnlPhai);
 
         // --- 3. KHU VỰC THANH TOÁN (BOTTOM) ---
-        JPanel pnlThanhToan = new JPanel(new BorderLayout(10, 10));
+        // SỬA: Đổi sang GridLayout 2 dòng để không bị đè UI
+        JPanel pnlThanhToan = new JPanel(new GridLayout(2, 1, 5, 5));
         pnlThanhToan.setBorder(BorderFactory.createTitledBorder("3. Thanh Toán Hóa Đơn"));
 
+ ThaiBranch
         // Form khách hàng (Bên trái)
+
+        // DÒNG 1: Form khách hàng (Căn trái)
+ main
         JPanel pnlKhach = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 5));
         pnlKhach.add(new JLabel("SĐT Khách Hàng:"));
         txtSdtKhach = new JTextField(15);
@@ -81,10 +86,16 @@ public class BanHangPanel extends JPanel {
         lblTenKhach.setForeground(Color.BLUE);
         pnlKhach.add(txtSdtKhach); pnlKhach.add(btnTimKhach); pnlKhach.add(lblTenKhach);
 
+ ThaiBranch
         // Nút Thanh toán & Checkbox dùng điểm (Bên phải)
         JPanel pnlTien = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 5));
 
         // --- NÂNG CẤP QUEST 3: JCheckBox dùng điểm ---
+
+        // DÒNG 2: Checkbox, Tổng tiền & Nút Thanh toán (Căn phải)
+        JPanel pnlTien = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 5));
+
+ main
         chkDungDiem = new JCheckBox("Sử dụng điểm tích lũy (1 điểm = 1.000đ)");
         chkDungDiem.setFont(new Font("Arial", Font.PLAIN, 13));
 
@@ -99,12 +110,17 @@ public class BanHangPanel extends JPanel {
         btnThanhToan.setForeground(Color.WHITE);
         btnThanhToan.setPreferredSize(new Dimension(200, 40));
 
+ ThaiBranch
         pnlTien.add(chkDungDiem); // Thêm checkbox vào trước
+
+        pnlTien.add(chkDungDiem); 
+ main
         pnlTien.add(lblTongTien);
         pnlTien.add(btnThanhToan);
 
-        pnlThanhToan.add(pnlKhach, BorderLayout.WEST);
-        pnlThanhToan.add(pnlTien, BorderLayout.EAST);
+        // Ném 2 dòng vào Panel chính
+        pnlThanhToan.add(pnlKhach);
+        pnlThanhToan.add(pnlTien);
 
         add(splitPane, BorderLayout.CENTER);
         add(pnlThanhToan, BorderLayout.SOUTH);
@@ -119,6 +135,13 @@ public class BanHangPanel extends JPanel {
     public String getSoLuongMua() { return txtSoLuongMua.getText().trim(); }
     public String getSdtKhach() { return txtSdtKhach.getText().trim(); }
 
+ ThaiBranch
+
+    public String getTimKiemGiay() { 
+        return txtTimGiay.getText().trim(); 
+    }
+
+ main
     // --- HÀM QUAN TRỌNG TRONG HỢP ĐỒNG QUEST 3 ---
     public boolean isDungDiem() { return chkDungDiem.isSelected(); }
 
@@ -138,6 +161,8 @@ public class BanHangPanel extends JPanel {
     public void addXoaKhoiGioListener(ActionListener l) { btnXoaKhoiGio.addActionListener(l); }
     public void addTimKhachListener(ActionListener l) { btnTimKhach.addActionListener(l); }
     public void addThanhToanListener(ActionListener l) { btnThanhToan.addActionListener(l); }
-
+    public void addTimKiemGiayListener(java.awt.event.KeyListener l) { 
+        txtTimGiay.addKeyListener(l); 
+    }
     public void showMessage(String msg) { JOptionPane.showMessageDialog(this, msg); }
 }
